@@ -1,6 +1,56 @@
+import { useState } from 'react'
 import './App.css'
 
 function App() {
+  // État pour les informations de l'entreprise (modifiables)
+  const [businessInfo, setBusinessInfo] = useState({
+    nom: 'Tapisserie La Bénédiction de Dieu',
+    slogan: 'L\'art de la rénovation de meubles',
+    description: 'Spécialiste de la tapisserie d\'ameublement depuis plus de 20 ans',
+    telephone: '+228 99 46 85 79',
+    email: 'rodriguehessou14@gmail.com',
+    adresse: 'Lomé, Togo',
+    horaires: 'Lun-Ven: 8h-20h, Sam: 9h-19h'
+  });
+
+  // Images permanentes de la galerie (ajoutez vos images ici)
+  const defaultGalleryImages = [
+    // Exemple : décommentez et modifiez avec vos vraies images
+    { id: 1, url: '/images/galerie/1.jpeg', name: 'Réfection fauteuil Louis XV', isPermanent: true },
+    { id: 2, url: '/images/galerie/2.jpeg', name: 'Restauration canapé ancien', isPermanent: true },
+    { id: 3, url: '/images/galerie/3.jpeg', name: 'Chaise restaurée', isPermanent: true },
+    { id: 5, url: '/images/galerie/4.jpeg', name: 'Restauration canapé ancien', isPermanent: true },
+    { id: 6, url: '/images/galerie/5.jpeg', name: 'Chaise restaurée', isPermanent: true },
+    { id: 4, url: '/images/galerie/6.jpeg', name: 'Chaise restaurée', isPermanent: true },
+
+
+  ];
+
+  const [galleryImages, setGalleryImages] = useState(defaultGalleryImages);
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = files.map(file => ({
+      id: Date.now() + Math.random(),
+      url: URL.createObjectURL(file),
+      name: file.name,
+      isPermanent: false
+    }));
+    setGalleryImages([...galleryImages, ...newImages]);
+  };
+
+  const removeImage = (id) => {
+    // Ne permet de supprimer que les images temporaires (uploadées)
+    setGalleryImages(galleryImages.filter(img => img.id !== id || img.isPermanent));
+  };
+
+  const [formData, setFormData] = useState({
+    nom: '',
+    email: '',
+    telephone: '',
+    message: ''
+  });
+
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (element) {
@@ -8,38 +58,49 @@ function App() {
     }
   };
 
+  const handleFormChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    alert('Merci pour votre message ! Nous vous contacterons bientôt.');
+    setFormData({ nom: '', email: '', telephone: '', message: '' });
+  };
+
   return (
     <div className="app">
       {/* Navigation */}
       <nav className="nav">
         <div className="nav-container">
-          <a href="#" className="nav-logo">BizPro</a>
+          <a href="#" className="nav-logo">{businessInfo.nom}</a>
           <ul className="nav-links">
-            <li><a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>Home</a></li>
+            <li><a href="#accueil" onClick={(e) => { e.preventDefault(); scrollToSection('accueil'); }}>Accueil</a></li>
             <li><a href="#services" onClick={(e) => { e.preventDefault(); scrollToSection('services'); }}>Services</a></li>
-            <li><a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>About</a></li>
-            <li><a href="#testimonials" onClick={(e) => { e.preventDefault(); scrollToSection('testimonials'); }}>Testimonials</a></li>
+            <li><a href="#galerie" onClick={(e) => { e.preventDefault(); scrollToSection('galerie'); }}>Galerie</a></li>
+            <li><a href="#apropos" onClick={(e) => { e.preventDefault(); scrollToSection('apropos'); }}>À Propos</a></li>
             <li><a href="#contact" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>Contact</a></li>
           </ul>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section id="home" className="hero">
-        <div className="hero-bg-circle hero-bg-circle-1"></div>
-        <div className="hero-bg-circle hero-bg-circle-2"></div>
+      <section id="accueil" className="hero">
+        <div className="hero-bg"></div>
         <div className="container hero-content">
-          <h1>Transform Your Business with Innovation</h1>
+          <h1>{businessInfo.slogan}</h1>
           <p className="hero-subtitle">
-            We deliver cutting-edge solutions that drive growth, enhance efficiency, 
-            and unlock your business's full potential in the digital age.
+            {businessInfo.description}. Nous redonnons vie à vos meubles avec passion et savoir-faire.
           </p>
           <div className="hero-cta">
             <a href="#contact" className="btn btn-primary" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>
-              Get Started
+              Demander un Devis
             </a>
             <a href="#services" className="btn btn-secondary" onClick={(e) => { e.preventDefault(); scrollToSection('services'); }}>
-              Learn More
+              Nos Services
             </a>
           </div>
         </div>
@@ -47,170 +108,262 @@ function App() {
 
       {/* Services Section */}
       <section id="services" className="section services">
-        <div className="bg-gradient-overlay"></div>
         <div className="container">
           <div className="section-header">
-            <p className="section-subtitle">What We Offer</p>
-            <h2>Our Premium Services</h2>
-            <p>Comprehensive solutions tailored to your business needs</p>
+            <p className="section-subtitle">Nos Expertises</p>
+            <h2>Services de Tapisserie</h2>
+            <p>Des prestations complètes pour tous vos besoins en ameublement</p>
           </div>
           <div className="grid grid-3">
-            <div className="glass-card service-card">
-              <div className="service-icon">🚀</div>
-              <h3>Digital Transformation</h3>
-              <p>Modernize your operations with cutting-edge technology and strategic digital solutions.</p>
+            <div className="card service-card">
+              <div className="service-icon">🛋️</div>
+              <h3>Réfection de Sièges</h3>
+              <p>Restauration complète de vos fauteuils, chaises et canapés avec des tissus de qualité.</p>
             </div>
-            <div className="glass-card service-card">
-              <div className="service-icon">💡</div>
-              <h3>Business Consulting</h3>
-              <p>Expert guidance to optimize processes, reduce costs, and maximize profitability.</p>
+            <div className="card service-card">
+              <div className="service-icon">🪑</div>
+              <h3>Rénovation  </h3>
+              <p>Expertise dans la restauration de meubles anciens en respectant les techniques traditionnelles.</p>
             </div>
-            <div className="glass-card service-card">
-              <div className="service-icon">📊</div>
-              <h3>Data Analytics</h3>
-              <p>Transform raw data into actionable insights that drive informed decision-making.</p>
+            <div className="card service-card">
+              <div className="service-icon">✂️</div>
+              <h3>Confection sur Mesure</h3>
+              <p>Création de coussins, rideaux et habillages personnalisés selon vos envies.</p>
             </div>
-            <div className="glass-card service-card">
-              <div className="service-icon">🎯</div>
-              <h3>Marketing Strategy</h3>
-              <p>Innovative campaigns that amplify your brand and connect with your audience.</p>
+            <div className="card service-card">
+              <div className="service-icon">🔧</div>
+              <h3>Réparation</h3>
+              <p>Remise en état de la structure, ressorts et sangles de vos meubles.</p>
             </div>
-            <div className="glass-card service-card">
-              <div className="service-icon">🔒</div>
-              <h3>Cybersecurity</h3>
-              <p>Protect your assets with enterprise-grade security solutions and monitoring.</p>
-            </div>
-            <div className="glass-card service-card">
-              <div className="service-icon">⚡</div>
-              <h3>Cloud Solutions</h3>
-              <p>Scalable cloud infrastructure that grows with your business needs.</p>
-            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery Section */}
+      <section id="galerie" className="section gallery">
+        <div className="container">
+          <div className="section-header">
+            <p className="section-subtitle">Nos Réalisations</p>
+            <h2>Galerie de Projets</h2>
+            <p>Découvrez quelques-unes de nos plus belles restaurations</p>
+          </div>
+          <div className="mb-md" style={{ textAlign: 'center' }}>
+            {/* <label htmlFor="image-upload" className="btn btn-primary" style={{ cursor: 'pointer' }}>
+              📸 Ajouter des Photos (Temporaire)
+            </label> */}
+            <input
+              type="file"
+              id="image-upload"
+              accept="image/*"
+              multiple
+              onChange={handleImageUpload}
+              style={{ display: 'none' }}
+            />
+            {/* <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
+              💡 Pour des images permanentes, placez vos photos dans <code>public/images/galerie/</code> et modifiez le code (ligne 17-22)
+            </p> */}
+          </div>
+
+          <div className="gallery-grid">
+            {galleryImages.length === 0 ? (
+              // Placeholders par défaut
+              [...Array(6)].map((_, index) => (
+                <div key={index} className="gallery-item">
+                  <span className="gallery-placeholder">🖼️</span>
+                </div>
+              ))
+            ) : (
+              // Images uploadées
+              galleryImages.map((image) => (
+                <div key={image.id} className="gallery-item" style={{ position: 'relative' }}>
+                  <img
+                    src={image.url}
+                    alt={image.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '1rem' }}
+                  />
+                  {!image.isPermanent && (
+                    <button
+                      onClick={() => removeImage(image.id)}
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        background: 'rgba(255, 0, 0, 0.8)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '30px',
+                        height: '30px',
+                        cursor: 'pointer',
+                        fontSize: '1.2rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
 
       {/* About Section */}
-      <section id="about" className="section about">
-        <div className="bg-gradient-overlay-secondary"></div>
+      <section id="apropos" className="section about">
         <div className="container">
           <div className="about-content">
             <div className="about-text">
-              <p className="section-subtitle">Who We Are</p>
-              <h2>Building Success Stories Since 2010</h2>
+              <p className="section-subtitle">Notre Histoire</p>
+              <h2>Artisan Tapissier Passionné</h2>
               <p>
-                We're a team of passionate innovators dedicated to helping businesses thrive 
-                in an ever-evolving digital landscape. With over a decade of experience, 
-                we've partnered with hundreds of companies to achieve remarkable growth.
+                Depuis plus de 20 ans, notre atelier perpétue la tradition de la tapisserie d'ameublement
+                avec passion et excellence. Chaque meuble qui nous est confié bénéficie d'un savoir-faire
+                artisanal transmis de génération en génération.
               </p>
               <p>
-                Our approach combines strategic thinking, technical expertise, and creative 
-                problem-solving to deliver solutions that don't just meet expectations—they 
-                exceed them.
+                Nous travaillons avec les meilleurs fournisseurs de tissus et matériaux pour garantir
+                une qualité irréprochable et une durabilité exceptionnelle de nos réalisations.
               </p>
-              <a href="#contact" className="btn btn-primary mt-md" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>
-                Partner With Us
-              </a>
+              <div className="about-features mt-md">
+                <div className="feature-item">
+                  <span className="feature-icon">✓</span>
+                  <span>Plus de 20 ans d'expérience</span>
+                </div>
+                <div className="feature-item">
+                  <span className="feature-icon">✓</span>
+                  <span>Techniques traditionnelles et modernes</span>
+                </div>
+                <div className="feature-item">
+                  <span className="feature-icon">✓</span>
+                  <span>Tissus de qualité supérieure</span>
+                </div>
+                <div className="feature-item">
+                  <span className="feature-icon">✓</span>
+                  <span>Devis gratuit et personnalisé</span>
+                </div>
+              </div>
             </div>
-            <div className="about-stats">
-              <div className="glass-card stat-card">
-                <div className="stat-number">500+</div>
-                <div className="stat-label">Projects Completed</div>
-              </div>
-              <div className="glass-card stat-card">
-                <div className="stat-number">98%</div>
-                <div className="stat-label">Client Satisfaction</div>
-              </div>
-              <div className="glass-card stat-card">
-                <div className="stat-number">50+</div>
-                <div className="stat-label">Team Members</div>
-              </div>
-              <div className="glass-card stat-card">
-                <div className="stat-number">15+</div>
-                <div className="stat-label">Years Experience</div>
+            <div className="about-image">
+              <div className="card" style={{ padding: '3rem', textAlign: 'center', minHeight: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div>
+                  <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>🪡</div>
+                  <h3>Savoir-faire Artisanal</h3>
+                  <p>Chaque projet est unique et réalisé avec soin</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section id="testimonials" className="section testimonials">
-        <div className="bg-gradient-overlay"></div>
+      {/* Contact Section */}
+      <section id="contact" className="section contact">
         <div className="container">
-          <div className="section-header">
-            <p className="section-subtitle">Client Success</p>
-            <h2>What Our Clients Say</h2>
-            <p>Real results from real partnerships</p>
-          </div>
-          <div className="grid grid-2">
-            <div className="glass-card testimonial-card">
-              <p className="testimonial-text">
-                "Working with BizPro transformed our entire operation. Their strategic insights 
-                and technical expertise helped us increase revenue by 150% in just one year."
-              </p>
-              <div className="testimonial-author">
-                <div className="author-avatar">SM</div>
-                <div className="author-info">
-                  <h4>Sarah Mitchell</h4>
-                  <p>CEO, TechVentures Inc.</p>
-                </div>
-              </div>
+          <div className="contact-content">
+            <div className="section-header">
+              <p className="section-subtitle">Contactez-nous</p>
+              <h2>Demandez Votre Devis Gratuit</h2>
+              <p>Nous sommes à votre écoute pour tous vos projets de tapisserie</p>
             </div>
-            <div className="glass-card testimonial-card">
-              <p className="testimonial-text">
-                "The team's dedication and innovative approach exceeded all expectations. 
-                They didn't just deliver a solution—they became true partners in our success."
-              </p>
-              <div className="testimonial-author">
-                <div className="author-avatar">JC</div>
-                <div className="author-info">
-                  <h4>James Chen</h4>
-                  <p>Founder, Digital Dynamics</p>
-                </div>
-              </div>
-            </div>
-            <div className="glass-card testimonial-card">
-              <p className="testimonial-text">
-                "Outstanding service from start to finish. Their data analytics solutions 
-                gave us insights we never knew we needed. Game-changing!"
-              </p>
-              <div className="testimonial-author">
-                <div className="author-avatar">ER</div>
-                <div className="author-info">
-                  <h4>Emily Rodriguez</h4>
-                  <p>COO, Growth Strategies Ltd.</p>
-                </div>
-              </div>
-            </div>
-            <div className="glass-card testimonial-card">
-              <p className="testimonial-text">
-                "Professional, responsive, and results-driven. BizPro helped us navigate 
-                digital transformation seamlessly. Highly recommend!"
-              </p>
-              <div className="testimonial-author">
-                <div className="author-avatar">MK</div>
-                <div className="author-info">
-                  <h4>Michael Kumar</h4>
-                  <p>Director, Innovation Hub</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section id="contact" className="section cta">
-        <div className="bg-gradient-overlay-secondary"></div>
-        <div className="container cta-content">
-          <h2>Ready to Transform Your Business?</h2>
-          <p>
-            Let's discuss how we can help you achieve your goals. 
-            Get in touch today for a free consultation.
-          </p>
-          <div className="hero-cta">
-            <a href="mailto:hello@bizpro.com" className="btn btn-primary">Contact Us</a>
-            <a href="tel:+1234567890" className="btn btn-secondary">Call Now</a>
+            <form className="contact-form" onSubmit={handleFormSubmit}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label" htmlFor="nom">Nom complet *</label>
+                  <input
+                    type="text"
+                    id="nom"
+                    name="nom"
+                    className="form-input"
+                    value={formData.nom}
+                    onChange={handleFormChange}
+                    required
+                    placeholder="Votre nom"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="email">Email *</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="form-input"
+                    value={formData.email}
+                    onChange={handleFormChange}
+                    required
+                    placeholder="votre@email.fr"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="telephone">Téléphone</label>
+                <input
+                  type="tel"
+                  id="telephone"
+                  name="telephone"
+                  className="form-input"
+                  value={formData.telephone}
+                  onChange={handleFormChange}
+                  placeholder="+33 1 23 45 67 89"
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="message">Votre projet *</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  className="form-textarea"
+                  value={formData.message}
+                  onChange={handleFormChange}
+                  required
+                  placeholder="Décrivez-nous votre projet de tapisserie..."
+                ></textarea>
+              </div>
+
+              <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
+                Envoyer ma demande
+              </button>
+            </form>
+
+            <div className="contact-info">
+              <div className="info-card">
+                <div className="info-icon">📞</div>
+                <h4>Téléphone / WhatsApp</h4>
+                <p>
+                  <a href={`tel:${businessInfo.telephone}`}>{businessInfo.telephone}</a>
+                  <br />
+                  <a
+                    href={`https://wa.me/22899468579`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary"
+                    style={{ marginTop: '0.5rem', padding: '0.5rem 1rem', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                  >
+                    💬 WhatsApp
+                  </a>
+                </p>
+              </div>
+              <div className="info-card">
+                <div className="info-icon">✉️</div>
+                <h4>Email</h4>
+                <p><a href={`mailto:${businessInfo.email}`}>{businessInfo.email}</a></p>
+              </div>
+              <div className="info-card">
+                <div className="info-icon">📍</div>
+                <h4>Adresse</h4>
+                <p>{businessInfo.adresse}</p>
+              </div>
+              <div className="info-card">
+                <div className="info-icon">🕐</div>
+                <h4>Horaires</h4>
+                <p>{businessInfo.horaires}</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -220,47 +373,46 @@ function App() {
         <div className="container">
           <div className="footer-content">
             <div className="footer-brand">
-              <h3 className="gradient-text">BizPro</h3>
+              <h3>{businessInfo.nom}</h3>
               <p>
-                Empowering businesses with innovative solutions 
-                for sustainable growth and success.
+                Votre artisan tapissier de confiance pour la restauration
+                et la création de meubles d'exception.
               </p>
               <div className="social-links">
-                <a href="#" className="social-link" aria-label="LinkedIn">in</a>
-                <a href="#" className="social-link" aria-label="Twitter">𝕏</a>
                 <a href="#" className="social-link" aria-label="Facebook">f</a>
                 <a href="#" className="social-link" aria-label="Instagram">📷</a>
+                <a href="#" className="social-link" aria-label="LinkedIn">in</a>
               </div>
             </div>
             <div className="footer-links">
               <h4>Services</h4>
               <ul>
-                <li><a href="#services">Digital Transformation</a></li>
-                <li><a href="#services">Consulting</a></li>
-                <li><a href="#services">Analytics</a></li>
-                <li><a href="#services">Marketing</a></li>
+                <li><a href="#services">Réfection de sièges</a></li>
+                <li><a href="#services">Restauration</a></li>
+                <li><a href="#services">Sur mesure</a></li>
+                <li><a href="#services">Conseil</a></li>
               </ul>
             </div>
             <div className="footer-links">
-              <h4>Company</h4>
+              <h4>Entreprise</h4>
               <ul>
-                <li><a href="#about">About Us</a></li>
-                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#apropos">À propos</a></li>
+                <li><a href="#galerie">Galerie</a></li>
                 <li><a href="#contact">Contact</a></li>
-                <li><a href="#">Careers</a></li>
+                <li><a href="#">Devis gratuit</a></li>
               </ul>
             </div>
             <div className="footer-links">
-              <h4>Legal</h4>
+              <h4>Informations</h4>
               <ul>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
-                <li><a href="#">Cookie Policy</a></li>
+                <li><a href="#">Mentions légales</a></li>
+                <li><a href="#">Politique de confidentialité</a></li>
+                <li><a href="#">CGV</a></li>
               </ul>
             </div>
           </div>
           <div className="footer-bottom">
-            <p>&copy; 2024 BizPro. All rights reserved. Built with passion for excellence.</p>
+            <p>&copy; 2026 {businessInfo.nom}. Tous droits réservés. Artisan tapissier professionnel.</p>
           </div>
         </div>
       </footer>
